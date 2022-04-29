@@ -35,7 +35,7 @@ func main() {
 2022-04-29T22:02:42.744+0800	ERROR	mytest/main.go:17	this is errorf level log
 ```
 
-默认只会显示 `Info` 及以上级别的日志，若要显示 `Debug` 或其他级别的日志，请调用 `1og.SetLogLeve1(1og.DebugLeve1)`，例如：
+默认只会显示 `Info` 及以上级别的日志，若要显示 `Debug` 或其他级别的日志，请调用 `log.SetLogLevel(log.DebugLevel)`，例如：
 ```go
 package main
 
