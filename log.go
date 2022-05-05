@@ -1,7 +1,6 @@
 package log
 
 import (
-	"io"
 	"os"
 
 	"go.uber.org/zap"
@@ -42,22 +41,35 @@ const (
 )
 
 // _logger is the sugared logger
-var _logger = New(os.Stderr, InfoLevel, ConsoleEncoder)
+var _logger = New().Build()
 
-// New constructs a new Log from the provided options
-func New(w io.Writer, level Level, encoding string) *Log {
-	logger := newLogger(w, level, encoding)
-	return &Log{
-		logger: logger,
+// New constructs a new Options from the provided options
+func New(options ...Option) *Options {
+	o := &Options{}
+	for _, option := range options {
+		option(o)
 	}
+
+	if o.writer == nil {
+		o.writer = os.Stderr
+	}
+	if o.level == 0 {
+		o.level = InfoLevel
+	}
+	if o.encoding == "" {
+		o.encoding = ConsoleEncoder
+	}
+
+	return o
 }
 
-func newLogger(w io.Writer, level Level, encoding string) *Logger {
+// Build construct a Log from Options
+func (o *Options) Build() *Log {
 	encoderConfig := zap.NewProductionEncoderConfig()
 	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	encoder := zapcore.NewConsoleEncoder(encoderConfig)
-	if encoding == JSONEncoder {
+	if o.encoding == JSONEncoder {
 		encoderConfig.EncodeTime = zapcore.EpochTimeEncoder
 		encoderConfig.EncodeLevel = zapcore.LowercaseLevelEncoder
 		encoder = zapcore.NewJSONEncoder(encoderConfig)
@@ -65,15 +77,18 @@ func newLogger(w io.Writer, level Level, encoding string) *Logger {
 
 	zapCore := zapcore.NewCore(
 		encoder,
-		zapcore.AddSync(w),
-		zapcore.Level(level),
+		zapcore.AddSync(o.writer),
+		zapcore.Level(o.level),
 	)
-	return zap.New(zapCore, zap.AddCaller(), zap.AddCallerSkip(1))
+
+	return &Log{
+		logger: zap.New(zapCore, zap.AddCaller(), zap.AddCallerSkip(1)),
+	}
 }
 
-// SetLogLevel set the log level
-func SetLogLevel(level Level) {
-	_logger = New(os.Stderr, level, ConsoleEncoder)
+// SetOptions set options
+func SetOptions(options ...Option) {
+	_logger = New(options...).Build()
 }
 
 // Debug logs a message at level Debug on the standard logger
@@ -181,7 +196,7 @@ var (
 	Any = zap.Any
 	// Bool is alias of zap.Bool Field
 	Bool = zap.Bool
-	// String is alias zap.String Field
+	// String is alias of zap.String Field
 	String = zap.String
 	// Float32 alias of zap.Float32 Field
 	Float32 = zap.Float32
@@ -205,7 +220,7 @@ var (
 	Uint16 = zap.Uint16
 	// Uint32 is alias of zap.Uint32 Field
 	Uint32 = zap.Uint32
-	// Uint64 is alias zap.Uint64 Field
+	// Uint64 is alias of zap.Uint64 Field
 	Uint64 = zap.Uint64
 	// Namespace is alias of zap.Namespace Field
 	Namespace = zap.Namespace
