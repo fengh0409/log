@@ -40,10 +40,10 @@ const (
 	JSONEncoder = "json"
 )
 
-// _logger is the sugared logger
+// _logger is a global Log
 var _logger = New().Build()
 
-// New constructs a new Options from the provided options
+// New initialize the options for building
 func New(options ...Option) *Options {
 	o := &Options{}
 	for _, option := range options {
@@ -157,25 +157,25 @@ func (l *Log) Debug(msg string, fields ...Field) {
 	l.logger.Debug(msg, fields...)
 }
 
-// Info logs a message at DebugLevel. The message includes any fields passed
+// Info logs a message at InfoLevel. The message includes any fields passed
 // at the log site, as well as any fields accumulated on the logger.
 func (l *Log) Info(msg string, fields ...Field) {
 	l.logger.Info(msg, fields...)
 }
 
-// Warn logs a message at DebugLevel. The message includes any fields passed
+// Warn logs a message at WarnLevel. The message includes any fields passed
 // at the log site, as well as any fields accumulated on the logger.
 func (l *Log) Warn(msg string, fields ...Field) {
 	l.logger.Warn(msg, fields...)
 }
 
-// Error logs a message at DebugLevel. The message includes any fields passed
+// Error logs a message at ErrorLevel. The message includes any fields passed
 // at the log site, as well as any fields accumulated on the logger.
 func (l *Log) Error(msg string, fields ...Field) {
 	l.logger.Error(msg, fields...)
 }
 
-// Fatal logs a message at DebugLevel. The message includes any fields passed
+// Fatal logs a message at FatalLevel. The message includes any fields passed
 // at the log site, as well as any fields accumulated on the logger.
 func (l *Log) Fatal(msg string, fields ...Field) {
 	l.logger.Fatal(msg, fields...)
