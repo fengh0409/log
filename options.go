@@ -2,9 +2,18 @@ package log
 
 import (
 	"io"
+	"strings"
 
 	"gopkg.in/natefinch/lumberjack.v2"
 )
+
+var _levelConvert = map[string]Level{
+	"debug": DebugLevel,
+	"info":  InfoLevel,
+	"warn":  WarnLevel,
+	"error": ErrorLevel,
+	"fatal": FatalLevel,
+}
 
 // Options define some options for building a Log
 type Options struct {
@@ -28,6 +37,16 @@ func WithLevel(level Level) Option {
 	return func(o *Options) {
 		o.level = level
 	}
+}
+
+// withLevelString convert the level to Level type, if not exists, we set it as InfoLevel default
+func WithLevelString(levelString string) Option {
+	level, ok := _levelConvert[strings.ToLower(levelString)]
+	if !ok {
+		level = InfoLevel
+	}
+
+	return WithLevel(level)
 }
 
 // WithEncoding specify the format of output, "json" and "console" are supported

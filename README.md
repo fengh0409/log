@@ -46,6 +46,8 @@ import (
 func main() {
 	defer log.Sync()
 	log.SetOptions(log.WithLevel(log.DebugLevel))
+	// 以上 log.DebugLevel 是 int 类型，若是命令行参数传进来的字符串，如 info，使用以下方式：
+	// log.SetOptions(log.WithLevelString("debug"))
 
 	log.Debug("this is debug level log")
 	log.Info("this is info level log")
